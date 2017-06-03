@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Favorite Gifs</title>
+    <style type="text/css">
+    button,
+    div,
+    form,
+    input {
+        margin: 10px;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Sport Gifs Search</h1>
+        <div id="buttons-view"></div>
+        <form id="sport-form">
+    </div>
+    <label for="sport-input">Add a Sport</label>
+    <input type="text" id="sport-input">
+    <br>
+    <input id="add-sport" type="submit" value="Add a gif">
+    </form>
+    <div id="sports-view"></div>
+    <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <script type="text/javascript">
+    // create an array with different sports that will be displayed in buttons.
+    var sports = ["Hockey", "Baseball", "Soccer", "Basketball", "Tennis", "Badminton", "Golf", "Nascar", "Bowling", "Karate", "Wrestling", "Volleyball", "Lacrosse"];
+
+
+
+
+    function animation() {
+        var stillURL = $(this).attr("stillsrc");
+        var activeURL = $(this).attr("nonstillsrc");
+        if (!$(this).hasClass(depo)) {
+            $(this).attr("nonstillsrc", activeURL);
+            $(this).addClass("depo");
+        } else {
+            $(this).attr("stillsrc", stillURL);
+            $(this).removeClass("depo");
+        }
+
+
+
+    }
+
+
+    function displaySportInfo() {
+        // clear sports view div every time you click a button and displaySportInfo is run
+        $("#sports-view").empty();
+
+        var sport = $(this).attr("data-name");
+
+
+
+        var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + sport + "?&api_key=dc6zaTOxFJmzC&limit=10";
+
+        // Performing AJAX GET request
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+
+            // Data comes back from API     
+        }).done(function(response) {
+            console.log(queryURL);
+            console.log(response);
+
+
+
+            // storing results from array in a variable
+            var sporty = response.data;
+
+            // looping over every result item
+
+            for (var i = 0; i < sporty.length; i++) {
+
+                // creating a div with class 'sport'	
+                var sportDiv = $("<div class='sport'>");
+                // storing the results item rating
+                var rating = sporty[i].rating;
+                // creating a paragraph with rating information
+                var pOne = $("<p>").text("Rating: " + rating);
+                // appending the information of the rating
+
+                sportDiv.append(pOne);
+
+                //defining the image use as a still and image gif
+                var stillURL = sporty[i].images.downsized_still.url;
+                var activeURL = sporty[i].images.original.url;
+
+                var image = $("<img>");
+
+				// creating attributes for still and gif image
+                image.attr("src", sporty[i].images.downsized_still.url);
+
+                image.attr("stillsrc", sporty[i].images.downsized_still.url);
+
+                image.attr("nonstillsrc", sporty[i].images.original.url);
+
+                // 
+                function animation() {
+                    var stillURL = $(this).attr("stillsrc");
+                    var activeURL = $(this).attr("nonstillsrc");
+                    if (!$(this).hasClass("depo")) {
+                        $(this).attr("nonstillsrc", activeURL);
+                        $(this).addClass("depo");
+                    } else {
+                        $(this).attr("stillsrc", stillURL);
+                        $(this).removeClass("depo");
+                    }
+
+
+
+                }
+
+
+                sportDiv.append(image);
+
+                $("#sports-view").prepend(sportDiv);
+
+
+            }
+
+        });
+    }
+
+    function renderButtons() {
+
+
+        $("#buttons-view").empty();
+
+
+        for (var i = 0; i < sports.length; i++) {
+
+            var a = $("<button>");
+
+            a.addClass("sport");
+
+            a.attr("data-name", sports[i]);
+
+            a.text(sports[i]);
+
+            $("#buttons-view").append(a);
+        }
+    }
+
+
+
+    $("#add-sport").on("click", function(event) {
+        event.preventDefault();
+
+        var sport = $("#sport-input").val().trim();
+
+
+
+        sports.push(sport);
+
+        renderButtons();
+
+
+    });
+
+
+    $(document).on("click", ".sport", displaySportInfo);
+
+    renderButtons();
+    </script>
+    </div>
+</body>
+
+</html>
+
